@@ -22,9 +22,10 @@
       left: 6px;
       width: calc(100vw - 12px);
       height: calc(100vh - 10px);
-      object-fit: cover;
-      object-position: top center;
-      border-radius: 0;
+
+      /* ここが修正ポイント */
+      object-fit: contain;        /* ← 全体表示 */
+      object-position: top center; /* 上は固定 */
     }
 
     .timer {
