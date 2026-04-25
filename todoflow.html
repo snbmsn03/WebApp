@@ -1,4 +1,4 @@
-<!-- TodoFlow v4.1 - 2026/04 -->
+<!-- TodoFlow v4.2 - 2026/04 -->
 
 <!DOCTYPE html>
 
@@ -71,7 +71,7 @@ body{display:flex;flex-direction:column}
 .tabs-edit-btn:active{color:var(–text)}
 
 /* SCROLL */
-.scroll{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:14px 16px calc(80px + var(–safe-bot))}
+.scroll{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:14px 16px calc(20px + var(–safe-bot))}
 ::-webkit-scrollbar{width:0}
 
 /* SECTION */
@@ -111,10 +111,12 @@ body{display:flex;flex-direction:column}
 .sub-del{width:18px;height:18px;border-radius:50%;border:1px solid var(–border2);background:transparent;cursor:pointer;color:var(–muted);font-size:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
 .add-sub-btn{font-size:12px;color:var(–accent2);background:transparent;border:none;cursor:pointer;padding:4px 0;font-family:‘DM Sans’,sans-serif;text-align:left}
 
-/* FAB */
-.fab{position:fixed;bottom:calc(20px + var(–safe-bot));right:18px;width:54px;height:54px;border-radius:17px;background:var(–accent);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 20px rgba(124,109,250,0.4);transition:transform 0.15s;z-index:50}
-.fab:active{transform:scale(0.92)}
-.fab svg{width:22px;height:22px;stroke:#fff;fill:none;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round}
+/* ADD BTN in header */
+.add-btn{width:34px;height:34px;border-radius:10px;background:var(–accent);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:transform 0.15s;flex-shrink:0}
+.add-btn:active{transform:scale(0.92)}
+.add-btn svg{width:18px;height:18px;stroke:#fff;fill:none;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round}
+/* VERSION BADGE */
+.version-badge{font-size:10px;font-family:‘DM Mono’,monospace;color:var(–muted2);letter-spacing:0.3px}
 
 /* MODAL */
 .modal-bg{position:fixed;inset:0;background:rgba(0,0,0,0.65);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);z-index:100;display:flex;align-items:flex-end;opacity:0;pointer-events:none;transition:opacity 0.25s}
@@ -159,10 +161,16 @@ body{display:flex;flex-direction:column}
 
 <div class="header">
   <div class="header-top">
-    <div class="app-title">Todo<span>Flow</span></div>
+    <div>
+      <div class="app-title">Todo<span>Flow</span></div>
+      <div class="version-badge">v4.2</div>
+    </div>
     <div class="header-right">
       <button class="icon-btn" id="search-toggle-btn" onclick="toggleSearch()">🔍</button>
       <button class="icon-btn" onclick="openSettings()">⚙️</button>
+      <button class="add-btn" onclick="openModal()">
+        <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      </button>
     </div>
   </div>
   <div class="stats-row">
@@ -186,10 +194,6 @@ body{display:flex;flex-direction:column}
 </div>
 
 <div class="scroll" id="scroll-area"></div>
-
-<button class="fab" onclick="openModal()">
-  <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-</button>
 
 <!-- TASK MODAL -->
 
