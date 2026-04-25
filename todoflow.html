@@ -1,4 +1,4 @@
-<!-- TodoFlow v4.3 - 2026/04 -->
+<!-- TodoFlow v4.5 - 2026/04 -->
 
 <!DOCTYPE html>
 
@@ -20,6 +20,9 @@
   --text:#f0f0f8;--muted:rgba(240,240,248,0.45);--muted2:rgba(240,240,248,0.25);
   --accent:#7c6dfa;--accent2:#a693ff;
   --green:#3ecf8e;--amber:#f59e0b;--pink:#f472b6;--blue:#38bdf8;--red:#f87171;
+  --btn-edit-bg:#1a3a5c;--btn-edit-text:#7dd3fc;
+  --btn-del-bg:#5c1a1a;--btn-del-text:#fca5a5;
+  --chip-text:rgba(240,240,248,0.8);
   --safe-top:env(safe-area-inset-top,0px);--safe-bot:env(safe-area-inset-bottom,0px);
   --radius:16px;--radius-sm:12px;
 }
@@ -28,6 +31,10 @@
   --border:rgba(0,0,0,0.08);--border2:rgba(0,0,0,0.14);
   --text:#0a0a0f;--muted:rgba(10,10,15,0.45);--muted2:rgba(10,10,15,0.25);
   --accent:#6558f5;--accent2:#7c6dfa;
+  --green:#1a9e6a;--red:#dc2626;
+  --btn-edit-bg:#1e3a5f;--btn-edit-text:#7dd3fc;
+  --btn-del-bg:#7f1d1d;--btn-del-text:#fca5a5;
+  --chip-text:rgba(10,10,15,0.75);
 }
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 html,body{height:100%;background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;overflow:hidden;transition:background 0.2s,color 0.2s}
@@ -57,7 +64,7 @@ body{display:flex;flex-direction:column}
 /* TAG FILTER */
 .tag-filter{display:flex;gap:8px;padding:10px 18px 0;overflow-x:auto;flex-shrink:0;background:var(–bg)}
 .tag-filter::-webkit-scrollbar{display:none}
-.filter-chip{padding:6px 14px;border-radius:20px;font-size:12px;font-weight:500;border:1px solid var(–border2);background:var(–surface);color:rgba(240,240,248,0.8);cursor:pointer;white-space:nowrap;transition:all 0.15s;flex-shrink:0}
+.filter-chip{padding:6px 14px;border-radius:20px;font-size:12px;font-weight:500;border:1px solid var(–border2);background:var(–surface);color:var(–chip-text);cursor:pointer;white-space:nowrap;transition:all 0.15s;flex-shrink:0}
 .filter-chip.active{background:var(–accent);border-color:var(–accent);color:#fff}
 
 /* TABS — v2スタイルに戻す、右端に編集ボタン */
@@ -67,8 +74,8 @@ body{display:flex;flex-direction:column}
 .tab{flex-shrink:0;padding:12px 18px;font-size:13px;font-weight:500;color:rgba(240,240,248,0.65);border:none;background:transparent;cursor:pointer;position:relative;transition:color 0.2s;white-space:nowrap}
 .tab.active{color:var(–text)}
 .tab.active::after{content:’’;position:absolute;bottom:0;left:18px;right:18px;height:2px;background:var(–accent);border-radius:2px 2px 0 0}
-.tabs-edit-btn{flex-shrink:0;width:38px;border:none;background:var(–surface2);color:rgba(240,240,248,0.75);font-size:15px;cursor:pointer;display:flex;align-items:center;justify-content:center;border-left:1px solid var(–border2);transition:all 0.15s}
-.tabs-edit-btn:active{background:var(–surface3);color:var(–text)}
+.tabs-edit-btn{flex-shrink:0;width:38px;border:none;background:var(–btn-edit-bg);color:var(–btn-edit-text);font-size:15px;cursor:pointer;display:flex;align-items:center;justify-content:center;border-left:1px solid var(–border2);transition:all 0.15s}
+.tabs-edit-btn:active{opacity:0.75;transform:scale(0.93)}
 
 /* SCROLL */
 .scroll{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:14px 16px calc(20px + var(–safe-bot))}
@@ -84,8 +91,8 @@ body{display:flex;flex-direction:column}
 .task-item.drag-over{border-color:var(–accent2);border-style:dashed}
 .swipe-wrapper{position:relative;overflow:hidden;border-radius:var(–radius)}
 .swipe-actions{position:absolute;right:0;top:0;bottom:0;display:flex;align-items:center;padding-right:12px;gap:8px}
-.swipe-del{background:var(–red);color:#fff;border:none;border-radius:10px;padding:8px 14px;font-size:13px;font-weight:500;cursor:pointer;font-family:‘DM Sans’,sans-serif;opacity:0;transition:opacity 0.2s}
-.swipe-edit{background:var(–accent);color:#fff;border:none;border-radius:10px;padding:8px 14px;font-size:13px;font-weight:500;cursor:pointer;font-family:‘DM Sans’,sans-serif;opacity:0;transition:opacity 0.2s}
+.swipe-del{background:var(–btn-del-bg);color:var(–btn-del-text);border:none;border-radius:10px;padding:8px 14px;font-size:13px;font-weight:500;cursor:pointer;font-family:‘DM Sans’,sans-serif;opacity:0;transition:opacity 0.2s;-webkit-appearance:none;appearance:none}
+.swipe-edit{background:var(–btn-edit-bg);color:var(–btn-edit-text);border:none;border-radius:10px;padding:8px 14px;font-size:13px;font-weight:500;cursor:pointer;font-family:‘DM Sans’,sans-serif;opacity:0;transition:opacity 0.2s;-webkit-appearance:none;appearance:none}
 .task-inner{background:var(–surface);transition:transform 0.2s;border-radius:var(–radius);position:relative;z-index:1}
 .task-row{display:flex;align-items:center;gap:10px;padding:13px 12px}
 .drag-handle{color:var(–muted2);font-size:14px;cursor:grab;flex-shrink:0;padding:0 2px;touch-action:none;user-select:none;-webkit-user-select:none}
@@ -96,7 +103,7 @@ body{display:flex;flex-direction:column}
 .task-text.done{opacity:0.35;text-decoration:line-through}
 .task-tag{font-size:10px;font-weight:500;padding:3px 8px;border-radius:6px;letter-spacing:0.4px;white-space:nowrap;flex-shrink:0}
 .sub-count{font-size:11px;color:var(–muted);font-family:‘DM Mono’,monospace;white-space:nowrap;flex-shrink:0}
-.expand-btn{width:26px;height:26px;border-radius:8px;border:1px solid var(–border2);background:var(–surface2);cursor:pointer;color:rgba(240,240,248,0.7);font-size:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all 0.15s}
+.expand-btn{width:26px;height:26px;border-radius:8px;border:1px solid var(–border2);background:var(–surface2);cursor:pointer;color:var(–accent2);font-size:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all 0.15s}
 
 /* SUBTASKS */
 .subtask-area{padding:0 12px 12px 48px;display:flex;flex-direction:column;gap:6px}
@@ -163,12 +170,12 @@ body{display:flex;flex-direction:column}
   <div class="header-top">
     <div>
       <div class="app-title">Todo<span>Flow</span></div>
-      <div class="version-badge">v4.3</div>
+      <div class="version-badge">v4.5</div>
     </div>
     <div class="header-right">
       <button class="icon-btn" id="search-toggle-btn" onclick="toggleSearch()">🔍</button>
-      <button class="icon-btn" onclick="exportData()" title="エクスポート">⬆️</button>
-      <button class="icon-btn" onclick="importData()" title="インポート">⬇️</button>
+      <button class="icon-btn" onclick="exportData()" title="エクスポート" style="font-size:18px;font-weight:500">↑</button>
+      <button class="icon-btn" onclick="importData()" title="インポート" style="font-size:18px;font-weight:500">↓</button>
       <button class="icon-btn" onclick="openSettings()">⚙️</button>
       <button class="add-btn" onclick="openModal()">
         <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
@@ -186,13 +193,9 @@ body{display:flex;flex-direction:column}
   <input class="search-input" id="search-input" placeholder="タスクを検索..." oninput="render()">
 </div>
 
-<div class="tag-filter" id="tag-filter"></div>
-
-<!-- タブバー：スクロール可能、右端に編集ボタン -->
-
-<div class="tabs-outer">
-  <div class="tabs-scroll" id="tabs-scroll"></div>
-  <button class="tabs-edit-btn" onclick="openTabModal()" title="タブを編集">✎</button>
+<div style="display:flex;align-items:center;background:var(--bg);flex-shrink:0">
+  <div class="tag-filter" id="tag-filter" style="flex:1;padding-right:0"></div>
+  <button class="tabs-edit-btn" onclick="openSettings()" title="タグを編集" style="flex-shrink:0;height:38px;margin-top:10px">✎</button>
 </div>
 
 <div class="scroll" id="scroll-area"></div>
@@ -250,6 +253,22 @@ body{display:flex;flex-direction:column}
         <option value="hide">非表示</option>
       </select>
     </div>
+    <div class="setting-row" style="flex-direction:column;align-items:flex-start;gap:10px">
+      <div class="setting-label">タグを編集</div>
+      <div id="tag-edit-list" style="width:100%;display:flex;flex-direction:column;gap:8px"></div>
+      <button class="modal-btn" style="margin-top:4px" onclick="openAddTagModal()">＋ タグを追加</button>
+    </div>
+  </div>
+</div>
+
+<!-- ADD TAG MODAL -->
+
+<div class="modal-bg" id="addtag-modal-bg" onclick="bgClick(event,'addtag-modal-bg')">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <div class="modal-title" id="addtag-modal-title">タグを追加</div>
+    <input class="modal-input" id="addtag-name" placeholder="タグ名...">
+    <button class="modal-btn" onclick="saveTag()">保存</button>
   </div>
 </div>
 
@@ -268,12 +287,13 @@ body{display:flex;flex-direction:column}
 </div>
 
 <script>
-const TAG_CFG={
+const DEFAULT_TAGS={
   work:{label:'仕事',bg:'rgba(124,109,250,0.18)',text:'#a693ff'},
   personal:{label:'個人',bg:'rgba(62,207,142,0.18)',text:'#3ecf8e'},
   study:{label:'学習',bg:'rgba(245,158,11,0.18)',text:'#fbbf24'},
   health:{label:'健康',bg:'rgba(244,114,182,0.18)',text:'#f472b6'}
 };
+function getTagCfg(){return state.tags||DEFAULT_TAGS;}
 
 function loadState(){try{return JSON.parse(localStorage.getItem('tf4_data'))||null}catch(e){return null}}
 function saveState(){localStorage.setItem('tf4_data',JSON.stringify(state))}
@@ -281,19 +301,15 @@ function loadSettings(){try{return JSON.parse(localStorage.getItem('tf4_settings
 function saveSettings(){localStorage.setItem('tf4_settings',JSON.stringify(settings))}
 
 let state=loadState()||{
-  tabs:[{id:'t1',name:'今日'},{id:'t2',name:'仕事'},{id:'t3',name:'個人'}],
-  tasks:{
-    t1:[
-      {id:1,text:'メールチェック',tag:'work',done:false,subtasks:[{text:'返信メール送付',done:false}],expanded:false},
-      {id:2,text:'週次レポート作成',tag:'work',done:false,subtasks:[],expanded:false},
-      {id:3,text:'運動',tag:'health',done:false,subtasks:[{text:'ストレッチ10分',done:false},{text:'ウォーキング30分',done:false}],expanded:false}
-    ],
-    t2:[],t3:[]
-  },
-  nextId:100
+  tasks:[
+    {id:1,text:'メールチェック',tag:'work',done:false,subtasks:[{text:'返信メール送付',done:false}],expanded:false},
+    {id:2,text:'週次レポート作成',tag:'work',done:false,subtasks:[],expanded:false},
+    {id:3,text:'運動',tag:'health',done:false,subtasks:[{text:'ストレッチ10分',done:false},{text:'ウォーキング30分',done:false}],expanded:false}
+  ],
+  nextId:100,
+  tags:{...DEFAULT_TAGS}
 };
 let settings=loadSettings()||{dark:true,showSearch:true,doneDisplay:'inline'};
-let activeTab=state.tabs[0]?.id||'t1';
 let tagFilter='all';
 let searchVisible=false;
 let editingId=null;
@@ -331,7 +347,7 @@ function switchTab(id){
   activeTab=id;
   tagFilter='all';
   if(!state.tasks[id])state.tasks[id]=[];
-  renderTabs();render();
+  render();
 }
 function openTabModal(){
   document.getElementById('new-tab-name').value='';
@@ -355,7 +371,7 @@ function addTab(){
   state.tasks[id]=[];
   saveState();
   document.getElementById('new-tab-name').value='';
-  renderTabEditList();renderTabs();
+  renderTabEditList();
 }
 function confirmDeleteTab(id,fromModal=false){
   const t=state.tabs.find(x=>x.id===id);
@@ -369,7 +385,7 @@ function confirmDeleteTab(id,fromModal=false){
     if(activeTab===id)activeTab=state.tabs[0].id;
     saveState();closeConfirm();
     if(fromModal)renderTabEditList();
-    renderTabs();render();
+    render();
   };
   document.getElementById('confirm-bg').classList.add('open');
 }
@@ -385,7 +401,7 @@ function renderTagFilter(){
   let html=`<button class="filter-chip${tagFilter==='all'?' active':''}" data-tag="all" onclick="setTagFilter('all')">すべて</button>`;
   const order=['work','personal','study','health'];
   order.filter(t=>usedTags.includes(t)).forEach(tag=>{
-    const label=TAG_CFG[tag]?.label||tag;
+    const label=getTagCfg()[tag]?.label||tag;
     html+=`<button class="filter-chip${tagFilter===tag?' active':''}" data-tag="${tag}" onclick="setTagFilter('${tag}')">${label}</button>`;
   });
   el.innerHTML=html;
@@ -403,7 +419,7 @@ function filterTasks(tasks){
   const q=getQ();if(q)list=list.filter(t=>t.text.toLowerCase().includes(q));
   return list;
 }
-function getActiveTasks(){return state.tasks[activeTab]||[]}
+function getActiveTasks(){return Array.isArray(state.tasks)?state.tasks:(state.tasks['t1']||[]);}
 
 function render(){
   renderTagFilter();
@@ -432,7 +448,7 @@ function render(){
 }
 
 function taskHTML(t){
-  const tc=TAG_CFG[t.tag]||TAG_CFG.work;
+  const tc=getTagCfg()[t.tag]||Object.values(getTagCfg())[0];
   const subs=t.subtasks||[];
   const sd=subs.filter(s=>s.done).length;
   let subHTML='';
@@ -479,12 +495,12 @@ function addSub(tid){
   if(t){t.subtasks.push({text:name,done:false});t.expanded=true;saveState();render();}
 }
 function deleteSub(tid,si){const t=getArr().find(x=>x.id===tid);if(t){t.subtasks.splice(si,1);saveState();render();}}
-function deleteTask(id){state.tasks[activeTab]=state.tasks[activeTab].filter(x=>x.id!==id);saveState();render();}
+function deleteTask(id){state.tasks=getActiveTasks().filter(x=>x.id!==id);saveState();render();}
 
 /* ── MODALS ── */
 function buildTagOptions(selectedTag){
   const sel=document.getElementById('modal-tag');
-  sel.innerHTML=Object.entries(TAG_CFG).map(([v,c])=>
+  sel.innerHTML=Object.entries(getTagCfg()).map(([v,c])=>
     `<option value="${v}"${selectedTag===v?' selected':''}>${c.label}</option>`
   ).join('');
 }
@@ -509,7 +525,7 @@ function openEditModal(id){
   setTimeout(()=>document.getElementById('modal-name').focus(),350);
 }
 function closeModal(){document.getElementById('modal-bg').classList.remove('open');editingId=null;}
-function openSettings(){document.getElementById('settings-bg').classList.add('open');}
+function openSettings(){document.getElementById('settings-bg').classList.add('open');renderTagEditList();}
 function closeConfirm(){document.getElementById('confirm-bg').classList.remove('open');}
 function bgClick(e,id){if(e.target===document.getElementById(id))document.getElementById(id).classList.remove('open');}
 
@@ -519,8 +535,8 @@ function saveModal(){
   if(editingId!==null){
     const t=getArr().find(x=>x.id===editingId);if(t){t.text=name;t.tag=tag;}
   } else {
-    if(!state.tasks[activeTab])state.tasks[activeTab]=[];
-    state.tasks[activeTab].push({id:state.nextId++,text:name,tag,done:false,subtasks:[],expanded:false});
+    if(!Array.isArray(state.tasks))state.tasks=[];
+    state.tasks.push({id:state.nextId++,text:name,tag,done:false,subtasks:[],expanded:false});
   }
   saveState();closeModal();render();
 }
@@ -621,6 +637,51 @@ function bindDrag(){
   });
 }
 
+
+/* ── TAG EDIT ── */
+function renderTagEditList(){
+  const cfg=getTagCfg();
+  const el=document.getElementById('tag-edit-list');
+  if(!el)return;
+  el.innerHTML=Object.entries(cfg).map(([id,t])=>`
+    <div style="display:flex;align-items:center;gap:10px;background:var(--surface);border:1px solid var(--border2);border-radius:12px;padding:10px 12px">
+      <span style="width:12px;height:12px;border-radius:50%;background:${t.text};flex-shrink:0"></span>
+      <span style="flex:1;font-size:15px;color:var(--text)">${t.label}</span>
+      <button onclick="deleteTag('${id}')" style="width:26px;height:26px;border-radius:8px;background:var(--surface3);border:1px solid var(--border2);cursor:pointer;color:var(--muted);font-size:13px;display:flex;align-items:center;justify-content:center">✕</button>
+    </div>`).join('');
+}
+let editingTagId=null;
+function openAddTagModal(){
+  editingTagId=null;
+  document.getElementById('addtag-modal-title').textContent='タグを追加';
+  document.getElementById('addtag-name').value='';
+  document.getElementById('addtag-modal-bg').classList.add('open');
+  setTimeout(()=>document.getElementById('addtag-name').focus(),350);
+}
+function saveTag(){
+  const name=document.getElementById('addtag-name').value.trim();
+  if(!name)return;
+  if(!state.tags)state.tags={...DEFAULT_TAGS};
+  const id='tag_'+Date.now();
+  const colors=['#a693ff','#3ecf8e','#fbbf24','#f472b6','#38bdf8','#f87171','#fb923c','#34d399'];
+  const usedColors=Object.values(state.tags).map(t=>t.text);
+  const color=colors.find(c=>!usedColors.includes(c))||colors[Object.keys(state.tags).length%colors.length];
+  state.tags[id]={label:name,bg:`${color}22`,text:color};
+  saveState();
+  document.getElementById('addtag-modal-bg').classList.remove('open');
+  renderTagEditList();render();
+}
+function deleteTag(id){
+  if(!state.tags)return;
+  if(Object.keys(state.tags).length<=1){alert('最低1つのタグが必要です');return;}
+  if(!confirm(`タグ「${state.tags[id]?.label}」を削除しますか？`))return;
+  delete state.tags[id];
+  // そのタグを使っているタスクは最初のタグに変更
+  const firstTag=Object.keys(state.tags)[0];
+  getActiveTasks().forEach(t=>{if(t.tag===id)t.tag=firstTag;});
+  saveState();renderTagEditList();render();
+}
+
 /* ── EXPORT / IMPORT ── */
 function exportData(){
   const payload={state,settings};
@@ -643,14 +704,14 @@ function importData(){
     reader.onload=ev=>{
       try{
         const payload=JSON.parse(ev.target.result);
-        if(!payload.state||!payload.state.tabs){alert('ファイルの形式が正しくありません');return;}
+        if(!payload.state){alert('ファイルの形式が正しくありません');return;}
         if(!confirm('現在のデータを上書きしてインポートしますか？'))return;
         state=payload.state;
+        if(!Array.isArray(state.tasks))state.tasks=[];
         if(payload.settings)settings=payload.settings;
-        activeTab=state.tabs[0]?.id||'t1';
         tagFilter='all';
         saveState();saveSettings();
-        applySettings();renderTabs();render();
+        applySettings();render();
         alert('インポートが完了しました');
       }catch(err){alert('読み込みに失敗しました: '+err.message);}
     };
@@ -662,7 +723,7 @@ function importData(){
 document.addEventListener('keydown',e=>{
   if(e.key==='Escape'){
     closeModal();closeConfirm();
-    ['settings-bg','tab-modal-bg'].forEach(id=>document.getElementById(id).classList.remove('open'));
+    ['settings-bg','tab-modal-bg','addtag-modal-bg'].forEach(id=>document.getElementById(id).classList.remove('open'));
   }
   if(e.key==='Enter'){
     if(document.getElementById('modal-bg').classList.contains('open'))saveModal();
@@ -670,7 +731,7 @@ document.addEventListener('keydown',e=>{
   }
 });
 
-applySettings();renderTabs();render();
+applySettings();render();
 </script>
 
 </body>
