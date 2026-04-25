@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="TodoFlow">
+<meta name="theme-color" content="#0a0a0f">
+<title>TodoFlow</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0a0a0f;
+  --surface: #13131a;
+  --surface2: #1c1c26;
+  --border: rgba(255,255,255,0.07);
+  --border2: rgba(255,255,255,0.12);
+  --text: #f0f0f8;
+  --muted: rgba(240,240,248,0.45);
+  --accent: #7c6dfa;
+  --accent2: #a693ff;
+  --green: #3ecf8e;
+  --amber: #f59e0b;
+  --pink: #f472b6;
+  --blue: #38bdf8;
+  --red: #f87171;
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-bot: env(safe-area-inset-bottom, 0px);
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;overflow:hidden}
+body{display:flex;flex-direction:column}
+
+/* HEADER */
+.header{
+  padding: calc(var(--safe-top) + 16px) 20px 16px;
+  background: var(--bg);
+  border-bottom: 1px solid var(--border);
+  flex-shrink:0;
+}
+.header-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.app-title{font-size:22px;font-weight:500;letter-spacing:-0.5px}
+.app-title span{color:var(--accent2)}
+.header-date{font-size:12px;color:var(--muted);font-family:'DM Mono',monospace;letter-spacing:0.5px}
+.stats-row{display:flex;gap:10px}
+.stat-pill{flex:1;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:10px 12px;text-align:center}
+.stat-pill .num{font-size:22px;font-weight:500;font-family:'DM Mono',monospace;color:var(--text)}
+.stat-pill .lbl{font-size:11px;color:var(--muted);margin-top:1px}
+.stat-pill.done .num{color:var(--green)}
+.stat-pill.left .num{color:var(--accent2)}
+
+/* TABS */
+.tabs{display:flex;gap:0;background:var(--surface);border-bottom:1px solid var(--border);flex-shrink:0}
+.tab{flex:1;padding:13px;font-size:13px;font-weight:500;color:var(--muted);border:none;background:transparent;cursor:pointer;position:relative;transition:color 0.2s;letter-spacing:0.2px}
+.tab.active{color:var(--text)}
+.tab.active::after{content:'';position:absolute;bottom:0;left:20%;right:20%;height:2px;background:var(--accent);border-radius:2px 2px 0 0}
+
+/* SCROLL AREA */
+.scroll{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:16px 16px calc(80px + var(--safe-bot))}
+
+/* TASK ITEMS */
+.task-item{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:16px;
+  margin-bottom:10px;
+  overflow:hidden;
+  transition:border-color 0.2s;
+}
+.task-item.expanded{border-color:var(--border2)}
+.task-row{display:flex;align-items:center;gap:12px;padding:14px 14px 14px 14px}
+.check{width:22px;height:22px;border-radius:50%;border:2px solid var(--border2);flex-shrink:0;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all 0.2s;background:transparent}
+.check.done{background:var(--green);border-color:var(--green)}
+.check.done::after{content:'';display:block;width:6px;height:10px;border:2px solid #0a0a0f;border-top:none;border-left:none;transform:rotate(45deg) translate(-1px,-1px)}
+.task-text{flex:1;font-size:15px;font-weight:400;color:var(--text);transition:opacity 0.2s}
+.task-text.done{opacity:0.35;text-decoration:line-through}
+.task-tag{font-size:10px;font-weight:500;padding:3px 8px;border-radius:6px;letter-spacing:0.4px;white-space:nowrap}
+.sub-count{font-size:11px;color:var(--muted);font-family:'DM Mono',monospace;white-space:nowrap}
+.expand-btn{width:28px;height:28px;border-radius:8px;border:1px solid var(--border);background:transparent;cursor:pointer;color:var(--muted);font-size:11px;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all 0.2s}
+.expand-btn:active{background:var(--surface2)}
+
+/* SUBTASKS */
+.subtask-area{padding:0 14px 12px 48px;display:flex;flex-direction:column;gap:6px}
+.subtask-row{display:flex;align-items:center;gap:10px}
+.sub-check{width:16px;height:16px;border-radius:50%;border:2px solid var(--border2);flex-shrink:0;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.2s}
+.sub-check.done{background:var(--green);border-color:var(--green)}
+.sub-check.done::after{content:'';display:block;width:4px;height:7px;border:1.5px solid #0a0a0f;border-top:none;border-left:none;transform:rotate(45deg) translate(-0.5px,-0.5px)}
+.sub-text{font-size:13px;color:rgba(240,240,248,0.7);transition:opacity 0.2s}
+.sub-text.done{opacity:0.3;text-decoration:line-through}
+.add-sub-btn{font-size:12px;color:var(--accent2);background:transparent;border:none;cursor:pointer;padding:4px 0;font-family:'DM Sans',sans-serif;opacity:0.8}
+.divider{height:1px;background:var(--border);margin:0 0 8px 0}
+
+/* PROJECT CARDS */
+.proj-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px}
+.proj-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:14px;cursor:pointer;transition:all 0.2s;position:relative;overflow:hidden}
+.proj-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;border-radius:16px 16px 0 0}
+.proj-card.sel{border-color:var(--border2)}
+.proj-card-name{font-size:14px;font-weight:500;margin-bottom:4px;color:var(--text)}
+.proj-card-meta{font-size:11px;color:var(--muted);font-family:'DM Mono',monospace}
+.proj-bar-bg{height:3px;background:var(--border);border-radius:2px;margin-top:10px;overflow:hidden}
+.proj-bar-fill{height:100%;border-radius:2px;transition:width 0.4s}
+.proj-section-title{font-size:13px;font-weight:500;color:var(--muted);letter-spacing:0.5px;text-transform:uppercase;margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.proj-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+
+/* FAB */
+.fab{
+  position:fixed;
+  bottom:calc(20px + var(--safe-bot));
+  right:20px;
+  width:56px;height:56px;
+  border-radius:18px;
+  background:var(--accent);
+  border:none;
+  cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:0 4px 24px rgba(124,109,250,0.4);
+  transition:transform 0.15s, box-shadow 0.15s;
+  z-index:50;
+}
+.fab:active{transform:scale(0.93);box-shadow:0 2px 12px rgba(124,109,250,0.3)}
+.fab svg{width:24px;height:24px;stroke:#fff;fill:none;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round}
+
+/* MODAL */
+.modal-bg{
+  position:fixed;inset:0;
+  background:rgba(0,0,0,0.7);
+  backdrop-filter:blur(8px);
+  -webkit-backdrop-filter:blur(8px);
+  z-index:100;
+  display:flex;align-items:flex-end;
+  opacity:0;pointer-events:none;transition:opacity 0.25s;
+}
+.modal-bg.open{opacity:1;pointer-events:all}
+.modal-sheet{
+  width:100%;
+  background:var(--surface2);
+  border-radius:24px 24px 0 0;
+  border:1px solid var(--border2);
+  border-bottom:none;
+  padding:20px 20px calc(20px + var(--safe-bot));
+  transform:translateY(100%);
+  transition:transform 0.3s cubic-bezier(0.32,0.72,0,1);
+}
+.modal-bg.open .modal-sheet{transform:translateY(0)}
+.modal-handle{width:40px;height:4px;background:var(--border2);border-radius:2px;margin:0 auto 20px}
+.modal-title{font-size:17px;font-weight:500;margin-bottom:16px;color:var(--text)}
+.modal-input{
+  width:100%;padding:14px 16px;
+  background:var(--surface);
+  border:1px solid var(--border2);
+  border-radius:14px;
+  color:var(--text);
+  font-size:16px;
+  font-family:'DM Sans',sans-serif;
+  margin-bottom:12px;
+  outline:none;
+  transition:border-color 0.2s;
+}
+.modal-input:focus{border-color:var(--accent)}
+.modal-select{
+  width:100%;padding:14px 16px;
+  background:var(--surface);
+  border:1px solid var(--border2);
+  border-radius:14px;
+  color:var(--text);
+  font-size:15px;
+  font-family:'DM Sans',sans-serif;
+  margin-bottom:12px;
+  outline:none;
+  appearance:none;
+  -webkit-appearance:none;
+}
+.color-row{display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap}
+.color-dot{width:36px;height:36px;border-radius:50%;cursor:pointer;border:2px solid transparent;transition:all 0.15s;flex-shrink:0}
+.color-dot.sel{border-color:#fff;transform:scale(1.15)}
+.modal-btn{
+  width:100%;padding:16px;
+  background:var(--accent);
+  color:#fff;
+  border:none;border-radius:14px;
+  font-size:16px;font-weight:500;
+  font-family:'DM Sans',sans-serif;
+  cursor:pointer;
+  transition:opacity 0.15s;
+}
+.modal-btn:active{opacity:0.8}
+.empty{padding:40px 0;text-align:center;color:var(--muted);font-size:14px}
+
+/* SECTION ACTIONS */
+.section-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.section-hdr-title{font-size:13px;font-weight:500;color:var(--muted);letter-spacing:0.5px;text-transform:uppercase}
+
+/* SCROLLBAR */
+::-webkit-scrollbar{width:0}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-top">
+    <div class="app-title">Todo<span>Flow</span></div>
+    <div class="header-date" id="hdr-date"></div>
+  </div>
+  <div class="stats-row">
+    <div class="stat-pill"><div class="num" id="s-total">0</div><div class="lbl">合計</div></div>
+    <div class="stat-pill done"><div class="num" id="s-done">0</div><div class="lbl">完了</div></div>
+    <div class="stat-pill left"><div class="num" id="s-left">0</div><div class="lbl">残り</div></div>
+  </div>
+</div>
+
+<div class="tabs">
+  <button class="tab active" id="tab-daily" onclick="switchTab('daily')">今日</button>
+  <button class="tab" id="tab-projects" onclick="switchTab('projects')">プロジェクト</button>
+</div>
+
+<div class="scroll" id="scroll-area"></div>
+
+<button class="fab" onclick="openModal()">
+  <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+</button>
+
+<div class="modal-bg" id="modal-bg" onclick="handleModalBgClick(event)">
+  <div class="modal-sheet" id="modal-sheet">
+    <div class="modal-handle"></div>
+    <div class="modal-title" id="modal-title">タスクを追加</div>
+    <input class="modal-input" id="modal-name" placeholder="タスク名..." />
+    <select class="modal-select" id="modal-tag">
+      <option value="work">仕事</option>
+      <option value="personal">個人</option>
+      <option value="study">学習</option>
+      <option value="health">健康</option>
+    </select>
+    <div id="color-picker-area" style="display:none">
+      <div style="font-size:12px;color:var(--muted);margin-bottom:8px;letter-spacing:0.3px">カラー</div>
+      <div class="color-row" id="color-row"></div>
+    </div>
+    <button class="modal-btn" id="modal-save" onclick="saveModal()">保存</button>
+  </div>
+</div>
+
+<script>
+const PROJ_COLORS=['#7c6dfa','#3ecf8e','#f472b6','#38bdf8','#f59e0b','#f87171'];
+const TAG_CFG={
+  work:{label:'仕事',bg:'rgba(124,109,250,0.15)',text:'#a693ff'},
+  personal:{label:'個人',bg:'rgba(62,207,142,0.15)',text:'#3ecf8e'},
+  study:{label:'学習',bg:'rgba(245,158,11,0.15)',text:'#fbbf24'},
+  health:{label:'健康',bg:'rgba(244,114,182,0.15)',text:'#f472b6'}
+};
+
+function load(){
+  try{return JSON.parse(localStorage.getItem('tf_data'))||null}catch(e){return null}
+}
+function save(){localStorage.setItem('tf_data',JSON.stringify(state))}
+
+let state=load()||{
+  daily:[
+    {id:1,text:'メールチェック',tag:'work',done:false,subtasks:[{text:'返信メール送付',done:false}],expanded:false},
+    {id:2,text:'週次レポート作成',tag:'work',done:false,subtasks:[],expanded:false},
+    {id:3,text:'運動',tag:'health',done:false,subtasks:[{text:'ストレッチ10分',done:false},{text:'ウォーキング30分',done:false}],expanded:false}
+  ],
+  projects:[
+    {id:101,name:'ウェブリニューアル',color:'#7c6dfa',tasks:[]},
+    {id:102,name:'マーケティング',color:'#3ecf8e',tasks:[]}
+  ],
+  nextId:200
+};
+
+let tab='daily';
+let selProj=null;
+let modalMode='task';
+let modalCtx='daily';
+let selColor=PROJ_COLORS[0];
+
+// Date
+(function(){
+  const d=new Date();
+  const days=['日','月','火','水','木','金','土'];
+  document.getElementById('hdr-date').textContent=`${d.getMonth()+1}/${d.getDate()}（${days[d.getDay()]}）`;
+})();
+
+function switchTab(t){
+  tab=t;
+  document.getElementById('tab-daily').classList.toggle('active',t==='daily');
+  document.getElementById('tab-projects').classList.toggle('active',t==='projects');
+  render();
+}
+
+function render(){
+  if(tab==='daily') renderDaily();
+  else renderProjects();
+}
+
+function renderDaily(){
+  const done=state.daily.filter(t=>t.done).length;
+  document.getElementById('s-total').textContent=state.daily.length;
+  document.getElementById('s-done').textContent=done;
+  document.getElementById('s-left').textContent=state.daily.length-done;
+  const el=document.getElementById('scroll-area');
+  if(!state.daily.length){el.innerHTML='<div class="empty">タスクがありません<br>＋ボタンで追加しましょう</div>';return;}
+  el.innerHTML=state.daily.map(t=>taskHTML(t,'daily')).join('');
+}
+
+function renderProjects(){
+  // update stats from all project tasks
+  let allTasks=state.projects.flatMap(p=>p.tasks);
+  const done=allTasks.filter(t=>t.done).length;
+  document.getElementById('s-total').textContent=allTasks.length;
+  document.getElementById('s-done').textContent=done;
+  document.getElementById('s-left').textContent=allTasks.length-done;
+
+  let html='<div class="proj-grid">';
+  state.projects.forEach(p=>{
+    const tot=p.tasks.length,dn=p.tasks.filter(t=>t.done).length;
+    const pct=tot?Math.round(dn/tot*100):0;
+    html+=`<div class="proj-card${selProj===p.id?' sel':''}" onclick="selProject(${p.id})" style="border-top-color:${p.color}">
+      <div class="proj-card::before" style="background:${p.color}"></div>
+      <div class="proj-card-name">${p.name}</div>
+      <div class="proj-card-meta">${dn}/${tot} 完了</div>
+      <div class="proj-bar-bg"><div class="proj-bar-fill" style="width:${pct}%;background:${p.color}"></div></div>
+    </div>`;
+  });
+  html+='</div>';
+
+  if(selProj!==null){
+    const p=state.projects.find(x=>x.id===selProj);
+    if(p){
+      html+=`<div class="proj-section-title"><span class="proj-dot" style="background:${p.color}"></span>${p.name}</div>`;
+      if(!p.tasks.length) html+='<div class="empty">タスクがありません</div>';
+      else html+=p.tasks.map(t=>taskHTML(t,'project')).join('');
+    }
+  }
+  document.getElementById('scroll-area').innerHTML=html;
+}
+
+function taskHTML(t,ctx){
+  const tc=TAG_CFG[t.tag]||TAG_CFG.work;
+  const subs=t.subtasks||[];
+  const sd=subs.filter(s=>s.done).length;
+  let subHTML='';
+  if(t.expanded){
+    subHTML='<div class="divider"></div><div class="subtask-area">';
+    subs.forEach((s,i)=>{
+      subHTML+=`<div class="subtask-row">
+        <div class="sub-check${s.done?' done':''}" onclick="toggleSub('${ctx}',${t.id},${i})"></div>
+        <span class="sub-text${s.done?' done':''}">${s.text}</span>
+      </div>`;
+    });
+    subHTML+=`<button class="add-sub-btn" onclick="addSub('${ctx}',${t.id})">＋ サブタスクを追加</button></div>`;
+  }
+  const subLabel=subs.length?`<span class="sub-count">${sd}/${subs.length}</span>`:'';
+  return `<div class="task-item${t.expanded?' expanded':''}">
+    <div class="task-row">
+      <div class="check${t.done?' done':''}" onclick="toggleTask('${ctx}',${t.id})"></div>
+      <span class="task-text${t.done?' done':''}">${t.text}</span>
+      ${subLabel}
+      <span class="task-tag" style="background:${tc.bg};color:${tc.text}">${tc.label}</span>
+      <button class="expand-btn" onclick="toggleExp('${ctx}',${t.id})">${t.expanded?'▲':'▼'}</button>
+    </div>
+    ${subHTML}
+  </div>`;
+}
+
+function getArr(ctx){
+  if(ctx==='daily') return state.daily;
+  const p=state.projects.find(x=>x.id===selProj);
+  return p?p.tasks:[];
+}
+
+function toggleTask(ctx,id){
+  const t=getArr(ctx).find(x=>x.id===id);
+  if(t){t.done=!t.done;save();render();}
+}
+function toggleExp(ctx,id){
+  const t=getArr(ctx).find(x=>x.id===id);
+  if(t){t.expanded=!t.expanded;save();render();}
+}
+function toggleSub(ctx,tid,si){
+  const t=getArr(ctx).find(x=>x.id===tid);
+  if(t&&t.subtasks[si]){t.subtasks[si].done=!t.subtasks[si].done;save();render();}
+}
+function addSub(ctx,tid){
+  const name=prompt('サブタスク名を入力');
+  if(!name) return;
+  const t=getArr(ctx).find(x=>x.id===tid);
+  if(t){t.subtasks.push({text:name,done:false});t.expanded=true;save();render();}
+}
+function selProject(id){
+  selProj=(selProj===id)?null:id;
+  render();
+}
+
+function openModal(){
+  modalCtx=tab;
+  if(tab==='projects' && selProj===null) modalMode='project';
+  else modalMode='task';
+  document.getElementById('modal-title').textContent=modalMode==='task'?'タスクを追加':'プロジェクトを追加';
+  document.getElementById('modal-tag').style.display=modalMode==='task'?'block':'none';
+  const cp=document.getElementById('color-picker-area');
+  if(modalMode==='project'){
+    cp.style.display='block';
+    selColor=PROJ_COLORS[0];
+    renderColorPicker();
+  } else {
+    cp.style.display='none';
+  }
+  document.getElementById('modal-name').value='';
+  document.getElementById('modal-bg').classList.add('open');
+  setTimeout(()=>document.getElementById('modal-name').focus(),350);
+}
+function closeModal(){document.getElementById('modal-bg').classList.remove('open');}
+function handleModalBgClick(e){if(e.target===document.getElementById('modal-bg'))closeModal();}
+
+function renderColorPicker(){
+  const row=document.getElementById('color-row');
+  row.innerHTML=PROJ_COLORS.map(c=>`<div class="color-dot${selColor===c?' sel':''}" style="background:${c}" onclick="pickColor('${c}')"></div>`).join('');
+}
+function pickColor(c){selColor=c;renderColorPicker();}
+
+function saveModal(){
+  const name=document.getElementById('modal-name').value.trim();
+  if(!name) return;
+  if(modalMode==='task'){
+    const tag=document.getElementById('modal-tag').value;
+    const t={id:state.nextId++,text:name,tag,done:false,subtasks:[],expanded:false};
+    if(modalCtx==='daily') state.daily.push(t);
+    else if(selProj!==null){const p=state.projects.find(x=>x.id===selProj);if(p)p.tasks.push(t);}
+  } else {
+    state.projects.push({id:state.nextId++,name,color:selColor,tasks:[]});
+  }
+  save();closeModal();render();
+}
+
+document.addEventListener('keydown',e=>{
+  if(e.key==='Escape') closeModal();
+  if(e.key==='Enter' && document.getElementById('modal-bg').classList.contains('open')) saveModal();
+});
+
+render();
+</script>
+</body>
+</html>
