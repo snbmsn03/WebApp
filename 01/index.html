@@ -18,16 +18,19 @@
 
     .screen {
       position: fixed;
-      inset: 0;
-      width: 100vw;
-      height: 100vh;
+      top: 0;
+      left: 6px;
+      width: calc(100vw - 12px);
+      height: calc(100vh - 10px);
       object-fit: cover;
+      object-position: top center;
+      border-radius: 0;
     }
 
     .timer {
       position: fixed;
-      right: 14px;
-      bottom: 12px;
+      right: 20px;
+      bottom: 22px;
       color: #1e88ff;
       font-size: 18px;
       font-weight: bold;
