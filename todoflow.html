@@ -1,3 +1,5 @@
+<!-- TodoFlow v4.1 - 2026/04 -->
+
 <!DOCTYPE html>
 
 <html lang="ja">
@@ -174,13 +176,7 @@ body{display:flex;flex-direction:column}
   <input class="search-input" id="search-input" placeholder="タスクを検索..." oninput="render()">
 </div>
 
-<div class="tag-filter">
-  <button class="filter-chip active" data-tag="all" onclick="setTagFilter('all')">すべて</button>
-  <button class="filter-chip" data-tag="work" onclick="setTagFilter('work')">仕事</button>
-  <button class="filter-chip" data-tag="personal" onclick="setTagFilter('personal')">個人</button>
-  <button class="filter-chip" data-tag="study" onclick="setTagFilter('study')">学習</button>
-  <button class="filter-chip" data-tag="health" onclick="setTagFilter('health')">健康</button>
-</div>
+<div class="tag-filter" id="tag-filter"></div>
 
 <!-- タブバー：スクロール可能、右端に編集ボタン -->
 
@@ -327,6 +323,7 @@ function renderTabs(){
 }
 function switchTab(id){
   activeTab=id;
+  tagFilter='all';
   if(!state.tasks[id])state.tasks[id]=[];
   renderTabs();render();
 }
@@ -372,9 +369,25 @@ function confirmDeleteTab(id,fromModal=false){
 }
 
 /* ── RENDER ── */
+function renderTagFilter(){
+  const tasks=getActiveTasks();
+  const usedTags=[...new Set(tasks.map(t=>t.tag))];
+  // タグが1種類以下なら非表示
+  const el=document.getElementById('tag-filter');
+  if(usedTags.length<=1){el.style.display='none';tagFilter='all';return;}
+  el.style.display='flex';
+  let html=`<button class="filter-chip${tagFilter==='all'?' active':''}" data-tag="all" onclick="setTagFilter('all')">すべて</button>`;
+  const order=['work','personal','study','health'];
+  order.filter(t=>usedTags.includes(t)).forEach(tag=>{
+    const label=TAG_CFG[tag]?.label||tag;
+    html+=`<button class="filter-chip${tagFilter===tag?' active':''}" data-tag="${tag}" onclick="setTagFilter('${tag}')">${label}</button>`;
+  });
+  el.innerHTML=html;
+}
+
 function setTagFilter(tag){
   tagFilter=tag;
-  document.querySelectorAll('.filter-chip').forEach(c=>c.classList.toggle('active',c.dataset.tag===tag));
+  renderTagFilter();
   render();
 }
 function getQ(){return(document.getElementById('search-input')||{value:''}).value.trim().toLowerCase()}
@@ -387,6 +400,7 @@ function filterTasks(tasks){
 function getActiveTasks(){return state.tasks[activeTab]||[]}
 
 function render(){
+  renderTagFilter();
   const all=getActiveTasks();
   const done=all.filter(t=>t.done).length;
   document.getElementById('s-total').textContent=all.length;
