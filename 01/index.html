@@ -1,1 +1,64 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Count Screen</title>
 
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: #fff;
+      font-family: "Arial Rounded MT Bold", "Hiragino Maru Gothic ProN", "Yu Gothic", sans-serif;
+    }
+
+    .screen {
+      position: fixed;
+      inset: 0;
+      width: 100vw;
+      height: 100vh;
+      object-fit: cover;
+    }
+
+    .timer {
+      position: fixed;
+      right: 14px;
+      bottom: 12px;
+      color: #1e88ff;
+      font-size: 18px;
+      font-weight: bold;
+      letter-spacing: 0.5px;
+      z-index: 10;
+      text-shadow: 0 1px 3px rgba(255,255,255,0.8);
+    }
+  </style>
+</head>
+
+<body>
+  <img src="image.jpg" class="screen" alt="background">
+
+  <div class="timer" id="timer">0s</div>
+
+  <script>
+    const timer = document.getElementById("timer");
+    const startTime = Date.now();
+    const maxSeconds = 300;
+
+    function updateTimer() {
+      const elapsed = Math.floor((Date.now() - startTime) / 1000);
+      const seconds = Math.min(elapsed, maxSeconds);
+      timer.textContent = seconds + "s";
+
+      if (seconds < maxSeconds) {
+        requestAnimationFrame(updateTimer);
+      }
+    }
+
+    updateTimer();
+  </script>
+</body>
+</html>
